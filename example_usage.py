@@ -108,6 +108,181 @@ def example_4_fast_training_config():
     # Run with fast training config
     main()
 
+def example_5_different_loss_functions():
+    """Example 5: Different loss function configurations"""
+    print("\n" + "=" * 60)
+    print("EXAMPLE 5: Different loss function configurations")
+    print("=" * 60)
+    
+    # Test different loss functions
+    loss_functions = ['focal', 'bce', 'weighted_bce', 'dice', 'combo']
+    
+    for loss_func in loss_functions:
+        print(f"\n--- Testing {loss_func.upper()} Loss ---")
+        
+        CONFIG.update({
+            'data_path': 'transactions.xlsx',
+            'num_numerical_features': 5,
+            'num_categorical_features': 6,
+            'loss_function': loss_func,
+            'num_epochs': 3,  # Quick test
+            'batch_size': 32
+        })
+        
+        print(f"Loss function: {CONFIG['loss_function']}")
+        if loss_func == 'weighted_bce':
+            print(f"Class weight: {CONFIG['class_weight']}")
+        elif loss_func == 'focal':
+            print(f"Focal alpha: {CONFIG['focal_alpha']}, gamma: {CONFIG['focal_gamma']}")
+        
+        # Note: In practice, you'd run main() here
+        main()
+
+def example_6_different_optimizers():
+    """Example 6: Different optimizer configurations"""
+    print("\n" + "=" * 60)
+    print("EXAMPLE 6: Different optimizer configurations")
+    print("=" * 60)
+    
+    # Test different optimizers
+    optimizers = [
+        ('adam', {'learning_rate': 0.001}),
+        ('adamw', {'learning_rate': 0.001, 'weight_decay': 0.01}),
+        ('sgd', {'learning_rate': 0.01, 'momentum': 0.9}),
+        ('rmsprop', {'learning_rate': 0.001}),
+        ('adagrad', {'learning_rate': 0.01}),
+        ('adamax', {'learning_rate': 0.001})
+    ]
+    
+    for opt_name, opt_params in optimizers:
+        print(f"\n--- Testing {opt_name.upper()} Optimizer ---")
+        
+        CONFIG.update({
+            'data_path': 'transactions.xlsx',
+            'num_numerical_features': 5,
+            'num_categorical_features': 6,
+            'optimizer': opt_name,
+            'num_epochs': 3,  # Quick test
+            'batch_size': 32,
+            **opt_params
+        })
+        
+        print(f"Optimizer: {CONFIG['optimizer']}")
+        print(f"Learning rate: {CONFIG['learning_rate']}")
+        if opt_name == 'sgd':
+            print(f"Momentum: {CONFIG['momentum']}")
+        elif opt_name in ['adam', 'adamw', 'adamax']:
+            print(f"Beta1: {CONFIG['beta1']}, Beta2: {CONFIG['beta2']}")
+        
+        # Note: In practice, you'd run main() here
+        main()
+
+def example_7_different_schedulers():
+    """Example 7: Different scheduler configurations"""
+    print("\n" + "=" * 60)
+    print("EXAMPLE 7: Different scheduler configurations")
+    print("=" * 60)
+    
+    # Test different schedulers
+    schedulers = [
+        ('none', {}),
+        ('onecycle', {'scheduler_max_lr': 0.002}),
+        ('step', {'scheduler_step_size': 10, 'scheduler_gamma': 0.5}),
+        ('cosine', {}),
+        ('exponential', {'scheduler_gamma': 0.95}),
+        ('plateau', {'scheduler_patience': 5, 'scheduler_factor': 0.5})
+    ]
+    
+    for sched_name, sched_params in schedulers:
+        print(f"\n--- Testing {sched_name.upper()} Scheduler ---")
+        
+        CONFIG.update({
+            'data_path': 'transactions.xlsx',
+            'num_numerical_features': 5,
+            'num_categorical_features': 6,
+            'scheduler': sched_name,
+            'num_epochs': 3,  # Quick test
+            'batch_size': 32,
+            **sched_params
+        })
+        
+        print(f"Scheduler: {CONFIG['scheduler']}")
+        if sched_name == 'onecycle':
+            print(f"Max LR: {CONFIG['scheduler_max_lr']}")
+        elif sched_name == 'step':
+            print(f"Step size: {CONFIG['scheduler_step_size']}, Gamma: {CONFIG['scheduler_gamma']}")
+        elif sched_name == 'exponential':
+            print(f"Gamma: {CONFIG['scheduler_gamma']}")
+        elif sched_name == 'plateau':
+            print(f"Patience: {CONFIG['scheduler_patience']}, Factor: {CONFIG['scheduler_factor']}")
+        
+        # Note: In practice, you'd run main() here
+        main()
+
+def example_8_advanced_configurations():
+    """Example 8: Advanced configurations for specific use cases"""
+    print("\n" + "=" * 60)
+    print("EXAMPLE 8: Advanced configurations for specific use cases")
+    print("=" * 60)
+    
+    # Configuration 1: High precision setup
+    print("\n--- High Precision Configuration ---")
+    CONFIG.update({
+        'data_path': 'transactions.xlsx',
+        'num_numerical_features': 5,
+        'num_categorical_features': 6,
+        'loss_function': 'weighted_bce',
+        'class_weight': 5.0,
+        'optimizer': 'adamw',
+        'learning_rate': 0.0005,
+        'weight_decay': 0.1,
+        'scheduler': 'plateau',
+        'scheduler_patience': 10,
+        'scheduler_factor': 0.3,
+        'min_recall': 0.85,
+        'threshold_range': (0.1, 0.9),
+        'num_epochs': 50
+    })
+    print("High precision setup with weighted BCE, AdamW, and plateau scheduler")
+    main()
+    
+    # Configuration 2: Fast convergence setup
+    print("\n--- Fast Convergence Configuration ---")
+    CONFIG.update({
+        'data_path': 'transactions.xlsx',
+        'num_numerical_features': 5,
+        'num_categorical_features': 6,
+        'loss_function': 'focal',
+        'focal_alpha': 0.95,
+        'focal_gamma': 7,
+        'optimizer': 'adam',
+        'learning_rate': 0.002,
+        'scheduler': 'onecycle',
+        'scheduler_max_lr': 0.005,
+        'batch_size': 128,
+        'num_epochs': 20
+    })
+    print("Fast convergence setup with focal loss, Adam, and onecycle scheduler")
+    main()
+    
+    # Configuration 3: Conservative training setup
+    print("\n--- Conservative Training Configuration ---")
+    CONFIG.update({
+        'data_path': 'transactions.xlsx',
+        'num_numerical_features': 5,
+        'num_categorical_features': 6,
+        'loss_function': 'dice',
+        'optimizer': 'sgd',
+        'learning_rate': 0.0001,
+        'momentum': 0.95,
+        'scheduler': 'cosine',
+        'batch_size': 32,
+        'num_epochs': 50,
+        'dropout': 0.3
+    })
+    print("Conservative training setup with dice loss, SGD, and cosine scheduler")
+    main()
+
 if __name__ == "__main__":
     print("CONFIG-DRIVEN TRANSFORMER CLASSIFICATION EXAMPLES")
     print("=" * 60)
@@ -127,7 +302,19 @@ if __name__ == "__main__":
     # example_3_high_precision_config()
     
     # Example 4: Fast training configuration
-    example_4_fast_training_config()
+    #example_4_fast_training_config()
+    
+    # Example 5: Different loss functions
+    # example_5_different_loss_functions()
+    
+    # Example 6: Different optimizers
+    # example_6_different_optimizers()
+    
+    # Example 7: Different schedulers
+    # example_7_different_schedulers()
+    
+    # Example 8: Advanced configurations
+    example_8_advanced_configurations()
     
     print("\nTo run an example, uncomment the corresponding function call above.")
     print("Make sure you have the required data files before running the examples.") 

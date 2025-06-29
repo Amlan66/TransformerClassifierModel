@@ -22,33 +22,238 @@ CONFIG = {
     'num_categorical_features': 6,     # Number of categorical features (should come after numerical)
     
     # Model Architecture (can be modified for different model sizes)
+    # embedding_dim: Controls embedding size for categorical features
+    #   - Values: 4, 8, 16, 32, 64
+    #   - Smaller (4-8): Faster training, less memory, may underfit
+    #   - Larger (16-64): Better representation, more memory, may overfit
     'embedding_dim': 8,
+    
+    # num_heads: Number of attention heads in transformer
+    #   - Values: 2, 4, 8, 16, 32
+    #   - Must be divisible by embedding_dim * num_categorical_features
+    #   - Smaller (2-4): Faster, less complex attention
+    #   - Larger (8-16): Better attention patterns, more parameters
     'num_heads': 8,
+    
+    # num_layers: Number of transformer layers
+    #   - Values: 1, 2, 3, 6, 9, 12, 18
+    #   - Smaller (1-3): Fast training, may underfit
+    #   - Medium (6-9): Good balance of performance and speed
+    #   - Larger (12-18): Better performance, slower training, may overfit
     'num_layers': 6,
+    
+    # dropout: Dropout rate for regularization
+    #   - Values: 0.0, 0.1, 0.2, 0.3, 0.4, 0.5
+    #   - 0.0: No regularization, may overfit
+    #   - 0.1-0.2: Light regularization, good for most cases
+    #   - 0.3-0.5: Heavy regularization, use if overfitting
     'dropout': 0.2,
     
     # Training Parameters (can be modified for different training strategies)
+    # learning_rate: Step size for gradient descent
+    #   - Values: 0.0001, 0.0005, 0.001, 0.002, 0.005, 0.01
+    #   - Smaller (0.0001-0.0005): Slow convergence, stable training
+    #   - Medium (0.001-0.002): Good balance, recommended starting point
+    #   - Larger (0.005-0.01): Fast convergence, may be unstable
     'learning_rate': 0.001,
+    
+    # num_epochs: Number of complete passes through training data
+    #   - Values: 5, 10, 20, 30, 50, 75, 100, 150
+    #   - Smaller (5-20): Fast training, may underfit
+    #   - Medium (30-75): Good balance, monitor for overfitting
+    #   - Larger (100+): Thorough training, risk of overfitting
     'num_epochs': 5,
+    
+    # batch_size: Number of samples per training batch
+    #   - Values: 16, 32, 64, 128, 256, 512
+    #   - Smaller (16-32): More stable gradients, slower training
+    #   - Medium (64-128): Good balance, recommended
+    #   - Larger (256+): Faster training, may need higher learning rate
     'batch_size': 64,
+    
+    # weight_decay: L2 regularization strength
+    #   - Values: 0.0, 0.0001, 0.001, 0.01, 0.1, 1.0
+    #   - 0.0: No regularization
+    #   - 0.0001-0.001: Light regularization
+    #   - 0.01-0.1: Medium regularization, good for most cases
+    #   - 1.0+: Heavy regularization, use if overfitting
     'weight_decay': 0.01,
     
     # Data Processing (can be modified for different splitting/resampling strategies)
+    # test_size: Fraction of data used for testing
+    #   - Values: 0.1, 0.15, 0.2, 0.25, 0.3
+    #   - Smaller (0.1-0.15): More training data, less reliable test
+    #   - Medium (0.2-0.25): Good balance, recommended
+    #   - Larger (0.3): Less training data, more reliable test
     'test_size': 0.2,
+    
+    # val_size: Fraction of remaining data used for validation
+    #   - Values: 0.2, 0.25, 0.3, 0.4
+    #   - Smaller (0.2-0.25): More training data, less validation
+    #   - Larger (0.3-0.4): More validation, less training data
     'val_size': 0.25,
+    
+    # smote_ratio: SMOTE oversampling ratio for minority class
+    #   - Values: 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+    #   - 0.1-0.3: Light oversampling, good for slightly imbalanced data
+    #   - 0.4-0.6: Medium oversampling, good for moderately imbalanced data
+    #   - 0.7-1.0: Heavy oversampling, use for highly imbalanced data
     'smote_ratio': 0.3,
+    
+    # undersample_ratio: Undersampling ratio for majority class
+    #   - Values: 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9
+    #   - 0.3-0.5: Heavy undersampling, reduces majority class significantly
+    #   - 0.6-0.7: Medium undersampling, good balance
+    #   - 0.8-0.9: Light undersampling, keeps most majority samples
     'undersample_ratio': 0.5,
     
     # Loss Function (can be modified for different class imbalance strategies)
+    # loss_function: Type of loss function to use
+    #   - Values: 'focal', 'bce', 'weighted_bce', 'dice', 'combo'
+    #   - 'focal': Focal Loss - focuses on hard examples, good for imbalanced data
+    #   - 'bce': Binary Cross Entropy - standard loss function
+    #   - 'weighted_bce': Weighted BCE - gives more weight to minority class
+    #   - 'dice': Dice Loss - good for imbalanced data, focuses on overlap
+    #   - 'combo': Combination of BCE and Dice Loss
+    'loss_function': 'focal',
+    
+    # focal_alpha: Weight for positive class in focal loss
+    #   - Values: 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.99
+    #   - Smaller (0.7-0.8): Less focus on positive class
+    #   - Medium (0.85-0.9): Balanced focus, good for most cases
+    #   - Larger (0.95-0.99): Heavy focus on positive class, use for severe imbalance
     'focal_alpha': 0.9,
+    
+    # focal_gamma: Focusing parameter in focal loss
+    #   - Values: 0, 1, 2, 3, 4, 5, 6, 7, 8
+    #   - 0: No focusing (equivalent to BCE loss)
+    #   - 1-3: Light focusing on hard examples
+    #   - 4-6: Medium focusing, good for most cases
+    #   - 7-8: Heavy focusing, use for very hard classification tasks
     'focal_gamma': 5,
     
+    # class_weight: Weight for positive class in weighted BCE
+    #   - Values: 0.1, 0.5, 1.0, 2.0, 5.0, 10.0
+    #   - 0.1-0.5: Less weight on positive class
+    #   - 1.0: Equal weights (standard BCE)
+    #   - 2.0-10.0: More weight on positive class, use for imbalanced data
+    'class_weight': 2.0,
+    
+    # Optimizer Configuration
+    # optimizer: Type of optimizer to use
+    #   - Values: 'adam', 'adamw', 'sgd', 'rmsprop', 'adagrad', 'adamax'
+    #   - 'adam': Adaptive learning rate, good for most cases
+    #   - 'adamw': Adam with weight decay, better regularization
+    #   - 'sgd': Stochastic Gradient Descent, more stable but slower
+    #   - 'rmsprop': Good for non-stationary problems
+    #   - 'adagrad': Good for sparse data
+    #   - 'adamax': Variant of Adam, sometimes better convergence
+    'optimizer': 'adamw',
+    
+    # learning_rate: Step size for gradient descent
+    #   - Values: 0.0001, 0.0005, 0.001, 0.002, 0.005, 0.01
+    #   - Smaller (0.0001-0.0005): Slow convergence, stable training
+    #   - Medium (0.001-0.002): Good balance, recommended starting point
+    #   - Larger (0.005-0.01): Fast convergence, may be unstable
+    'learning_rate': 0.001,
+    
+    # weight_decay: L2 regularization strength
+    #   - Values: 0.0, 0.0001, 0.001, 0.01, 0.1, 1.0
+    #   - 0.0: No regularization
+    #   - 0.0001-0.001: Light regularization
+    #   - 0.01-0.1: Medium regularization, good for most cases
+    #   - 1.0+: Heavy regularization, use if overfitting
+    'weight_decay': 0.01,
+    
+    # momentum: Momentum for SGD optimizer
+    #   - Values: 0.0, 0.5, 0.7, 0.9, 0.95, 0.99
+    #   - 0.0: No momentum
+    #   - 0.5-0.7: Light momentum
+    #   - 0.9-0.95: Standard momentum, good for most cases
+    #   - 0.99: High momentum, may overshoot
+    'momentum': 0.9,
+    
+    # beta1: Beta1 parameter for Adam-based optimizers
+    #   - Values: 0.8, 0.9, 0.95, 0.99
+    #   - 0.8-0.9: Less smoothing of gradients
+    #   - 0.9-0.95: Standard values, good for most cases
+    #   - 0.99: Heavy smoothing, more stable but slower
+    'beta1': 0.9,
+    
+    # beta2: Beta2 parameter for Adam-based optimizers
+    #   - Values: 0.9, 0.95, 0.99, 0.999
+    #   - 0.9-0.95: Less smoothing of squared gradients
+    #   - 0.99-0.999: Standard values, good for most cases
+    #   - 0.999: Heavy smoothing, very stable
+    'beta2': 0.999,
+    
+    # Scheduler Configuration
+    # scheduler: Type of learning rate scheduler to use
+    #   - Values: 'onecycle', 'step', 'cosine', 'exponential', 'plateau', 'none'
+    #   - 'onecycle': One-cycle policy, often best performance
+    #   - 'step': Step decay, simple and effective
+    #   - 'cosine': Cosine annealing, smooth decay
+    #   - 'exponential': Exponential decay, aggressive
+    #   - 'plateau': Reduce on plateau, adaptive
+    #   - 'none': No scheduler, constant learning rate
+    'scheduler': 'onecycle',
+    
+    # scheduler_max_lr: Maximum learning rate for schedulers
+    #   - Values: 0.0005, 0.001, 0.002, 0.005, 0.01
+    #   - Usually 1-2x the base learning_rate
+    #   - Higher for onecycle, lower for others
+    'scheduler_max_lr': 0.001,
+    
+    # scheduler_step_size: Step size for step scheduler
+    #   - Values: 5, 10, 15, 20, 30
+    #   - Smaller: More frequent decay
+    #   - Larger: Less frequent decay
+    'scheduler_step_size': 15,
+    
+    # scheduler_gamma: Decay factor for step/exponential schedulers
+    #   - Values: 0.1, 0.3, 0.5, 0.7, 0.9
+    #   - Smaller: More aggressive decay
+    #   - Larger: Gentler decay
+    'scheduler_gamma': 0.5,
+    
+    # scheduler_patience: Patience for plateau scheduler
+    #   - Values: 3, 5, 7, 10, 15
+    #   - Smaller: More sensitive to plateaus
+    #   - Larger: More tolerant of plateaus
+    'scheduler_patience': 7,
+    
+    # scheduler_factor: Factor for plateau scheduler
+    #   - Values: 0.1, 0.3, 0.5, 0.7, 0.9
+    #   - Smaller: More aggressive reduction
+    #   - Larger: Gentler reduction
+    'scheduler_factor': 0.5,
+    
     # Threshold Optimization (can be modified for different precision/recall trade-offs)
+    # min_recall: Minimum recall threshold for model selection
+    #   - Values: 0.8, 0.85, 0.9, 0.95, 0.98, 0.99
+    #   - Smaller (0.8-0.85): Higher precision, lower recall
+    #   - Medium (0.9-0.95): Balanced precision/recall, recommended
+    #   - Larger (0.98-0.99): Higher recall, lower precision
     'min_recall': 0.95,
+    
+    # threshold_range: Range for threshold search (min, max)
+    #   - Values: (0.01, 0.5), (0.01, 0.7), (0.01, 0.81), (0.1, 0.9), (0.2, 0.8)
+    #   - Lower range (0.01, 0.5): Focus on high recall
+    #   - Medium range (0.01, 0.7-0.81): Balanced search
+    #   - Higher range (0.1, 0.9): Focus on high precision
     'threshold_range': (0.01, 0.81),
+    
+    # threshold_step: Step size for threshold search
+    #   - Values: 0.005, 0.01, 0.02, 0.05
+    #   - Smaller (0.005-0.01): Fine-grained search, more precise
+    #   - Larger (0.02-0.05): Coarse search, faster computation
     'threshold_step': 0.01,
     
     # Reproducibility
+    # random_state: Random seed for reproducibility
+    #   - Values: Any integer (42, 123, 2024, etc.)
+    #   - Use same value for reproducible results
+    #   - Change for different random initializations
     'random_state': 42
 }
 
@@ -87,6 +292,87 @@ class FocalLoss(nn.Module):
             return focal_loss.sum()
         else:
             return focal_loss
+
+class DiceLoss(nn.Module):
+    def __init__(self, smooth=1e-6):
+        """
+        Dice Loss: Good for imbalanced data, focuses on overlap between predictions and targets
+        smooth: Smoothing factor to prevent division by zero
+        """
+        super(DiceLoss, self).__init__()
+        self.smooth = smooth
+
+    def forward(self, inputs, targets):
+        # Flatten inputs and targets
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+        
+        # Calculate intersection
+        intersection = (inputs * targets).sum()
+        
+        # Calculate dice coefficient
+        dice = (2. * intersection + self.smooth) / (inputs.sum() + targets.sum() + self.smooth)
+        
+        # Return dice loss (1 - dice coefficient)
+        return 1 - dice
+
+class WeightedBCELoss(nn.Module):
+    def __init__(self, pos_weight=None):
+        """
+        Weighted Binary Cross Entropy Loss
+        pos_weight: Weight for positive class
+        """
+        super(WeightedBCELoss, self).__init__()
+        self.pos_weight = pos_weight if pos_weight is not None else CONFIG['class_weight']
+
+    def forward(self, inputs, targets):
+        # Create weight tensor
+        weights = torch.ones_like(targets)
+        weights[targets == 1] = self.pos_weight
+        
+        # Calculate weighted BCE loss
+        bce_loss = F.binary_cross_entropy(inputs, targets, reduction='none')
+        weighted_loss = weights * bce_loss
+        
+        return weighted_loss.mean()
+
+class ComboLoss(nn.Module):
+    def __init__(self, alpha=0.5, beta=0.5):
+        """
+        Combination of BCE and Dice Loss
+        alpha: Weight for BCE loss
+        beta: Weight for Dice loss
+        """
+        super(ComboLoss, self).__init__()
+        self.alpha = alpha
+        self.beta = beta
+        self.bce = nn.BCELoss()
+        self.dice = DiceLoss()
+
+    def forward(self, inputs, targets):
+        bce_loss = self.bce(inputs, targets)
+        dice_loss = self.dice(inputs, targets)
+        
+        return self.alpha * bce_loss + self.beta * dice_loss
+
+def create_loss_function():
+    """
+    Create loss function based on config
+    """
+    loss_type = CONFIG['loss_function'].lower()
+    
+    if loss_type == 'focal':
+        return FocalLoss()
+    elif loss_type == 'bce':
+        return nn.BCELoss()
+    elif loss_type == 'weighted_bce':
+        return WeightedBCELoss()
+    elif loss_type == 'dice':
+        return DiceLoss()
+    elif loss_type == 'combo':
+        return ComboLoss()
+    else:
+        raise ValueError(f"Unknown loss function: {loss_type}. Available: focal, bce, weighted_bce, dice, combo")
 
 def calculate_categorical_dimensions(X, categorical_features):
     """
@@ -354,7 +640,7 @@ def find_optimal_threshold_from_arrays(outputs, labels):
     return best_threshold
 
 def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler=None, num_epochs=None, device='cuda'):
-    best_val_f1 = 0
+    best_val_precision = 0
     best_model = None
     
     # Use config value if not provided
@@ -387,9 +673,20 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler
         
         # Step the scheduler if provided
         if scheduler is not None:
-            scheduler.step()
-            current_lr = scheduler.get_last_lr()[0]
-            print(f"Current learning rate: {current_lr:.6f}")
+            if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                # Plateau scheduler needs validation loss
+                scheduler.step(train_loss / len(train_loader))
+            else:
+                # Other schedulers step every epoch
+                scheduler.step()
+            
+            # Print current learning rate
+            if hasattr(scheduler, 'get_last_lr'):
+                current_lr = scheduler.get_last_lr()[0]
+                print(f"Current learning rate: {current_lr:.6f}")
+            elif hasattr(optimizer, 'param_groups'):
+                current_lr = optimizer.param_groups[0]['lr']
+                print(f"Current learning rate: {current_lr:.6f}")
         
         # Validation phase - first collect all predictions
         model.eval()
@@ -422,10 +719,10 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler
         print(f'Optimal Threshold: {optimal_threshold:.4f}')
         print(f'Val Precision: {val_precision:.4f}, Val Recall: {val_recall:.4f}, Val F1: {val_f1:.4f}')
         
-        # Save model if it improves F1 score with sufficient recall
-        if val_f1 > best_val_f1 and val_recall >= CONFIG['min_recall']:
-            print(f"New best model with F1: {val_f1:.4f} and Recall: {val_recall:.4f}")
-            best_val_f1 = val_f1
+        # Save model if it improves precision score with sufficient recall
+        if val_precision > best_val_precision and val_recall >= CONFIG['min_recall']:
+            print(f"New best model with Precision: {val_precision:.4f} and Recall: {val_recall:.4f}")
+            best_val_precision = val_precision
             best_model = model.state_dict().copy()
             best_threshold = optimal_threshold
         
@@ -466,6 +763,98 @@ def load_data(data_path):
     y = df.iloc[:, -1].values
     
     return X, y
+
+def create_optimizer(model):
+    """
+    Create optimizer based on config
+    """
+    optimizer_type = CONFIG['optimizer'].lower()
+    lr = CONFIG['learning_rate']
+    weight_decay = CONFIG['weight_decay']
+    
+    if optimizer_type == 'adam':
+        return torch.optim.Adam(
+            model.parameters(), 
+            lr=lr, 
+            weight_decay=weight_decay,
+            betas=(CONFIG['beta1'], CONFIG['beta2'])
+        )
+    elif optimizer_type == 'adamw':
+        return torch.optim.AdamW(
+            model.parameters(), 
+            lr=lr, 
+            weight_decay=weight_decay,
+            betas=(CONFIG['beta1'], CONFIG['beta2'])
+        )
+    elif optimizer_type == 'sgd':
+        return torch.optim.SGD(
+            model.parameters(), 
+            lr=lr, 
+            momentum=CONFIG['momentum'],
+            weight_decay=weight_decay
+        )
+    elif optimizer_type == 'rmsprop':
+        return torch.optim.RMSprop(
+            model.parameters(), 
+            lr=lr, 
+            weight_decay=weight_decay
+        )
+    elif optimizer_type == 'adagrad':
+        return torch.optim.Adagrad(
+            model.parameters(), 
+            lr=lr, 
+            weight_decay=weight_decay
+        )
+    elif optimizer_type == 'adamax':
+        return torch.optim.Adamax(
+            model.parameters(), 
+            lr=lr, 
+            weight_decay=weight_decay,
+            betas=(CONFIG['beta1'], CONFIG['beta2'])
+        )
+    else:
+        raise ValueError(f"Unknown optimizer: {optimizer_type}. Available: adam, adamw, sgd, rmsprop, adagrad, adamax")
+
+def create_scheduler(optimizer, num_epochs, steps_per_epoch):
+    """
+    Create scheduler based on config
+    """
+    scheduler_type = CONFIG['scheduler'].lower()
+    
+    if scheduler_type == 'none':
+        return None
+    elif scheduler_type == 'onecycle':
+        return torch.optim.lr_scheduler.OneCycleLR(
+            optimizer, 
+            max_lr=CONFIG['scheduler_max_lr'], 
+            epochs=num_epochs, 
+            steps_per_epoch=steps_per_epoch
+        )
+    elif scheduler_type == 'step':
+        return torch.optim.lr_scheduler.StepLR(
+            optimizer, 
+            step_size=CONFIG['scheduler_step_size'], 
+            gamma=CONFIG['scheduler_gamma']
+        )
+    elif scheduler_type == 'cosine':
+        return torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, 
+            T_max=num_epochs
+        )
+    elif scheduler_type == 'exponential':
+        return torch.optim.lr_scheduler.ExponentialLR(
+            optimizer, 
+            gamma=CONFIG['scheduler_gamma']
+        )
+    elif scheduler_type == 'plateau':
+        return torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, 
+            mode='min',
+            factor=CONFIG['scheduler_factor'],
+            patience=CONFIG['scheduler_patience']
+        )
+    else:
+        raise ValueError(f"Unknown scheduler: {scheduler_type}. Available: none, onecycle, step, cosine, exponential, plateau")
 
 def main():
     """
@@ -575,16 +964,11 @@ def main():
     print(f"Trainable parameters: {trainable_params:,}")
     
     # Training setup using config
-    criterion = FocalLoss()  # Uses config values by default
-    optimizer = torch.optim.AdamW(model.parameters(), lr=CONFIG['learning_rate'], weight_decay=CONFIG['weight_decay'])
+    criterion = create_loss_function()
+    optimizer = create_optimizer(model)
     
     # Learning rate scheduler using config
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(
-        optimizer, 
-        max_lr=CONFIG['learning_rate'], 
-        epochs=CONFIG['num_epochs'], 
-        steps_per_epoch=len(train_loader)
-    )
+    scheduler = create_scheduler(optimizer, CONFIG['num_epochs'], len(train_loader))
     
     # Train model using config
     print("Starting training...")
